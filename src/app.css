@@ -1,0 +1,39 @@
+.leaflet-container {
+  width: 85vw;
+  height: 100vh;
+}
+.app {
+  display: flex;
+  text-align: center;
+}
+
+.polyline {
+  z-index: 0;
+  opacity: 0.4;
+  transition: 0.3s;
+  stroke-width: 3px;
+}
+
+.polyline:hover {
+  z-index: 555555 !important;
+  stroke: #cc4400;
+  stroke-width: 7px;
+  opacity: 1;
+}
+
+.background {
+  background-image: url("/public/background.jpg");
+  background-size: 100% 100%;
+  width: 15%;
+  min-width: 360px;
+}
+
+.sidebar {
+  border-radius: 1rem;
+  align-items: center;
+  margin: 10px 10px;
+  height: 94%;
+  padding: 1rem;
+  color: rgb(218, 218, 218);
+  background-color: rgba(53, 53, 53, 0.541);
+}

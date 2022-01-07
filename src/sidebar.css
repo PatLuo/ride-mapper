@@ -1,0 +1,26 @@
+body {
+  letter-spacing: 0.1rem;
+}
+.title {
+  font-size: 36px;
+}
+h1 {
+  color: rgb(255, 255, 255);
+}
+.overview {
+  padding-top: 0.25rem;
+}
+
+.stat {
+  padding-bottom: 1rem;
+}
+
+hr.headerDivider {
+  border-width: 2px;
+  border-color: whitesmoke;
+}
+
+hr.statDivider {
+  width: 270px;
+  border-color: rgba(255, 255, 255, 0.486);
+}
