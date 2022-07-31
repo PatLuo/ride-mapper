@@ -32,7 +32,7 @@ export default function Sidebar(props) {
           .filter((v, i, a) => v[1] === a[0][1])
           .map((v) => v[0]);
 
-      setHighestOccurance(mode(dayOccurance)[1]);
+      setHighestOccurance(mode(dayOccurance)[0]);
       if (data.length !== 0) {
         setLastRide(data[0].date);
       }
