@@ -1,10 +1,19 @@
+body {
+  background-color: #3f3f3f;
+  margin: 0;
+  height: 100%;
+}
+
+.content {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  text-align: center;
+}
+
 .leaflet-container {
   width: 85vw;
   height: 100vh;
-}
-.app {
-  display: flex;
-  text-align: center;
 }
 
 .polyline {
@@ -13,35 +22,41 @@
   transition: 0.3s;
   stroke-width: 3px;
 }
-body {
-  background-color: #3f3f3f;
-  margin: 0;
-  height: 100%;
-  overflow: hidden;
-}
 .polyline:hover {
   z-index: 555555 !important;
   stroke: #ff6600;
   stroke-width: 7px;
   opacity: 1;
 }
-.content {
-  width: 100%;
-  display: flex;
-}
+
 .background {
   background-image: url("/public/background.jpg");
   background-size: 100% 100%;
   width: 15%;
   min-width: 360px;
+  height: 100%;
 }
 
 .sidebar {
+  overflow: hidden;
+  overflow-y: scroll;
   border-radius: 1rem;
   align-items: center;
   margin: 10px 10px;
-  height: 92%;
+  height: 92vh;
   padding: 1rem;
   color: rgb(218, 218, 218);
   background-color: rgba(53, 53, 53, 0.541);
+}
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #ffffffab;
+  border-radius: 10px;
+  height: 50%;
 }
