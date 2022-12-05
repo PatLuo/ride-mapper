@@ -8,11 +8,19 @@ export default function Sidebar(props) {
   const [highestOccurance, setHighestOccurance] = useState();
   const [lastRide, setLastRide] = useState();
 
-  const { googleSignIn } = UserAuth();
+  const { googleSignIn, logOut, user } = UserAuth();
 
   const signInWithGoogle = async () => {
     try {
       await googleSignIn();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logOut();
     } catch (error) {
       console.log(error);
     }
@@ -58,18 +66,29 @@ export default function Sidebar(props) {
         <p>Mapping out all my bike rides across Ottawa🍁 using the Strava API. Made with react-leaflet.</p>
         <h4>Click on a path for details</h4>
       </div>
-      <hr className="headerDivider"></hr>
-      <h4>View your own rides</h4>
-      <button className="loginButton" onClick={signInWithGoogle}>
-        Sign In With Google{" "}
-      </button>
 
       <hr className="headerDivider"></hr>
+      {user?.displayName ? (
+        <div>
+          <h3>Signed in as {user.displayName}</h3>
+          <button className="logoutButton" onClick={handleSignOut}>
+            Log Out
+          </button>
+        </div>
+      ) : (
+        <div>
+          <h4>To view your own rides...</h4>
+          <button className="loginButton" onClick={signInWithGoogle}>
+            Sign In With Google
+          </button>
+        </div>
+      )}
 
+      <hr className="headerDivider"></hr>
       <div className="overview">
         <h1>Overview</h1>
         <div className="stat">
-          <h4>I've gone on...</h4>
+          <h4>Gone on a total of...</h4>
           <h1>{numberOfRides} rides</h1>
         </div>
         <hr className="statDivider"></hr>
@@ -84,8 +103,7 @@ export default function Sidebar(props) {
         </div>
         <hr className="statDivider"></hr>
         <div className="stat">
-          {" "}
-          <h4>My last bike ride was on...</h4>
+          <h4>Last bike ride was on...</h4>
           <h1>{lastRide}</h1>
         </div>
       </div>
