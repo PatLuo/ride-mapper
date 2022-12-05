@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./app.css";
 import Sidebar from "./sidebar";
+import { AuthContextProvider } from "./context/AuthContext";
 
 // leaflet map
 import polyline from "@mapbox/polyline";
@@ -68,41 +69,43 @@ function App() {
       {loading ? (
         <SyncLoader color={`#4ba2fa`} loading={loading} css={override} size={20} />
       ) : (
-        <div className="content">
-          <MapContainer center={[45.3755676397901, -75.7501302762503]} zoom={13} scrollWheelZoom={true} zoomControl={false}>
-            <LayersControl>
-              <BaseLayer name="Light">
-                <TileLayer attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png" maxZoom="20" />
-              </BaseLayer>
-              <BaseLayer checked name="Dark">
-                <TileLayer attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" maxZoom="20" />
-              </BaseLayer>
-              <BaseLayer name="Colorful">
-                <TileLayer attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' url="https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png" maxZoom="20" />
-              </BaseLayer>
-              <BaseLayer name="Satellite">
-                <TileLayer attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community" url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-              </BaseLayer>
-            </LayersControl>
+        <AuthContextProvider>
+          <div className="content">
+            <MapContainer center={[45.3755676397901, -75.7501302762503]} zoom={13} scrollWheelZoom={true} zoomControl={false}>
+              <LayersControl>
+                <BaseLayer name="Light">
+                  <TileLayer attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png" maxZoom="20" />
+                </BaseLayer>
+                <BaseLayer checked name="Dark">
+                  <TileLayer attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" maxZoom="20" />
+                </BaseLayer>
+                <BaseLayer name="Colorful">
+                  <TileLayer attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' url="https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png" maxZoom="20" />
+                </BaseLayer>
+                <BaseLayer name="Satellite">
+                  <TileLayer attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community" url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
+                </BaseLayer>
+              </LayersControl>
 
-            <div className="shapes">
-              {activities.map((activity, i) => (
-                <Polyline className="polyline" key={i} positions={activity.polyline} pathOptions={{ color: "#54a9ff", stroke: "false" }}>
-                  <Popup>
-                    <h2>{activity.date}</h2>
-                    <h3>Duration: {activity.duration}</h3>
-                    <h3>Distance: {activity.distance} km</h3>
-                  </Popup>
-                </Polyline>
-              ))}
-            </div>
-          </MapContainer>
-          <div className="background">
-            <div className="sidebar">
-              <Sidebar activities={activities} />
+              <div className="shapes">
+                {activities.map((activity, i) => (
+                  <Polyline className="polyline" key={i} positions={activity.polyline} pathOptions={{ color: "#54a9ff", stroke: "false" }}>
+                    <Popup>
+                      <h2>{activity.date}</h2>
+                      <h3>Duration: {activity.duration}</h3>
+                      <h3>Distance: {activity.distance} km</h3>
+                    </Popup>
+                  </Polyline>
+                ))}
+              </div>
+            </MapContainer>
+            <div className="background">
+              <div className="sidebar">
+                <Sidebar activities={activities} />
+              </div>
             </div>
           </div>
-        </div>
+        </AuthContextProvider>
       )}
     </div>
   );

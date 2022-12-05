@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from "react";
 import "./sidebar.css";
+import { UserAuth } from "./context/AuthContext";
 
 export default function Sidebar(props) {
   const [numberOfRides, setNumberOfRides] = useState();
   const [totalDistanceRounded, setTotalDistanceRounded] = useState();
   const [highestOccurance, setHighestOccurance] = useState();
   const [lastRide, setLastRide] = useState();
+
+  const { googleSignIn } = UserAuth();
+
+  const signInWithGoogle = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const updateStats = () => {
@@ -49,7 +60,9 @@ export default function Sidebar(props) {
       </div>
       <hr className="headerDivider"></hr>
       <h4>View your own rides</h4>
-      <button className="loginButton">Login</button>
+      <button className="loginButton" onClick={signInWithGoogle}>
+        Sign In With Google{" "}
+      </button>
 
       <hr className="headerDivider"></hr>
 
