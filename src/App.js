@@ -6,6 +6,9 @@ import Sidebar from "./sidebar";
 // leaflet map
 import polyline from "@mapbox/polyline";
 import { MapContainer, TileLayer, LayersControl, Popup, Polyline, ZoomControl } from "react-leaflet";
+// Firebase
+import { db } from "./firebase-config";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 // loading spinner
 import SyncLoader from "react-spinners/SyncLoader";
 import { css } from "@emotion/react";
@@ -15,6 +18,9 @@ const { BaseLayer } = LayersControl;
 function App() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const [users, setUsers] = useState([]);
+  const usersCollectionRef = collection(db, "users");
 
   const override = css`
     margin: 0;
@@ -31,18 +37,29 @@ function App() {
       const activityResponse = await axios.get(`https://www.strava.com/api/v3/athlete/activities?per_page=100&access_token=${accessToken}`);
       const activityData = [];
 
-      for (let i = 0; i < activityResponse.data.length; i++) {
-        const data = activityResponse.data[i];
-        const startDate = new Date(data.start_date);
+      activityResponse.data.forEach((activity) => {
+        if (!activity.map.summary_polyline) {
+          return; // skip if no polyline
+        }
+        const startDate = new Date(activity.start_date);
         const activityDate = startDate.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-        const activityPolyline = polyline.decode(data.map.summary_polyline);
-        const activityDuration = new Date(data.elapsed_time * 1000).toISOString().substr(11, 8);
-        const activityDistance = Math.round((data.distance / 1000) * 100) / 100;
+        const activityPolyline = polyline.decode(activity.map.summary_polyline);
+        const activityDuration = new Date(activity.elapsed_time * 1000).toISOString().substr(11, 8);
+        const activityDistance = Math.round((activity.distance / 1000) * 100) / 100;
         activityData.push({ date: activityDate, polyline: activityPolyline, duration: activityDuration, distance: activityDistance });
-      }
+      });
+      console.log(activityData);
       setActivities(activityData);
       setLoading(false);
     }
+
+    const getUsers = async () => {
+      const data = await getDocs(usersCollectionRef);
+      setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      console.log(data);
+    };
+
+    getUsers();
     fetchData();
   }, []);
 

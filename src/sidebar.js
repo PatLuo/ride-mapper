@@ -43,11 +43,16 @@ export default function Sidebar(props) {
   return (
     <div>
       <div className="header">
-        <h1 className="title">Ride Mapper</h1>
+        <h1 className="title">Ride Mapper🚴‍♂️</h1>
         <p>Mapping out all my bike rides across Ottawa🍁 using the Strava API. Made with react-leaflet.</p>
         <h4>Click on a path for details</h4>
       </div>
       <hr className="headerDivider"></hr>
+      <h4>View your own rides</h4>
+      <button className="loginButton">Login</button>
+
+      <hr className="headerDivider"></hr>
+
       <div className="overview">
         <h1>Overview</h1>
         <div className="stat">
