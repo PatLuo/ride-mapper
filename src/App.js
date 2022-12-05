@@ -23,6 +23,7 @@ function App() {
   const [users, setUsers] = useState([]);
   const usersCollectionRef = collection(db, "users");
 
+  const searchURL = window.location.search;
   const override = css`
     margin: 0;
     position: absolute;
@@ -32,35 +33,41 @@ function App() {
 
   useEffect(() => {
     async function fetchData() {
-      setLoading(true);
-      const newTokenData = await axios.all([axios.post(`https://www.strava.com/oauth/token?client_id=${process.env.REACT_APP_CLIENTID}&client_secret=${process.env.REACT_APP_CLIENTSECRET}&refresh_token=${process.env.REACT_APP_REFRESHTOKEN}&grant_type=refresh_token`)]);
-      const accessToken = newTokenData[0].data.access_token;
-      const activityResponse = await axios.get(`https://www.strava.com/api/v3/athlete/activities?per_page=100&access_token=${accessToken}`);
       const activityData = [];
+      setLoading(true);
+      if (searchURL) {
+        const authCode = searchURL.split("&")[1].split("=")[1];
+        const exchangeCodeForToken = await axios.all([axios.post(`https://www.strava.com/oauth/token?client_id=${process.env.REACT_APP_CLIENTID}&client_secret=${process.env.REACT_APP_CLIENTSECRET}&code=${authCode}&grant_type=authorization_code`)]);
+        const refreshToken = exchangeCodeForToken[0].data.refresh_token;
+        const newTokenData = await axios.all([axios.post(`https://www.strava.com/oauth/token?client_id=${process.env.REACT_APP_CLIENTID}&client_secret=${process.env.REACT_APP_CLIENTSECRET}&refresh_token=${process.env.REACT_APP_REFRESHTOKEN}&grant_type=refresh_token`)]);
+        const accessToken = newTokenData[0].data.access_token;
+        const activityResponse = await axios.get(`https://www.strava.com/api/v3/athlete/activities?per_page=100&access_token=${accessToken}`);
 
-      activityResponse.data.forEach((activity) => {
-        if (!activity.map.summary_polyline) {
-          return; // skip if no polyline
-        }
-        const startDate = new Date(activity.start_date);
-        const activityDate = startDate.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-        const activityPolyline = polyline.decode(activity.map.summary_polyline);
-        const activityDuration = new Date(activity.elapsed_time * 1000).toISOString().substr(11, 8);
-        const activityDistance = Math.round((activity.distance / 1000) * 100) / 100;
-        activityData.push({ date: activityDate, polyline: activityPolyline, duration: activityDuration, distance: activityDistance });
-      });
-      console.log(activityData);
+        activityResponse.data.forEach((activity) => {
+          if (!activity.map.summary_polyline) {
+            return; // skip if no polyline
+          }
+          const startDate = new Date(activity.start_date);
+          const activityDate = startDate.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+          const activityPolyline = polyline.decode(activity.map.summary_polyline);
+          const activityDuration = new Date(activity.elapsed_time * 1000).toISOString().substr(11, 8);
+          const activityDistance = Math.round((activity.distance / 1000) * 100) / 100;
+          activityData.push({ date: activityDate, polyline: activityPolyline, duration: activityDuration, distance: activityDistance });
+        });
+      }
+
       setActivities(activityData);
+      console.log(activityData);
       setLoading(false);
     }
 
-    const getUsers = async () => {
-      const data = await getDocs(usersCollectionRef);
-      setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-      console.log(data);
-    };
+    // const getUsers = async () => {
+    //   const data = await getDocs(usersCollectionRef);
+    //   setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    //   console.log(data);
+    // };
+    // getUsers();
 
-    getUsers();
     fetchData();
   }, []);
 
