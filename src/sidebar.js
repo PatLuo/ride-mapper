@@ -68,9 +68,10 @@ export default function Sidebar(props) {
       </div>
 
       <hr className="headerDivider"></hr>
-      {user?.displayName ? (
+      {user ? (
         <div>
-          <h4>Load in your Strava data</h4>
+          <div>{user.displayName}</div>
+          <h4>Load in your own Strava data</h4>
           <div className="stravaButton">
             <a href={`https://www.strava.com/oauth/authorize?client_id=${process.env.REACT_APP_CLIENTID}&redirect_uri=http://localhost:3000&response_type=code&scope=activity:read_all`}>
               <svg width="193px" height="48px" viewBox="0 0 193 48" version="1.1">
