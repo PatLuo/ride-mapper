@@ -20,9 +20,9 @@ export default function App() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const { user } = UserAuth();
+  let { user } = UserAuth();
 
-  const usersCollectionRef = collection(db, "users");
+  const usersColRef = collection(db, "users");
 
   const searchURL = window.location.search;
   const override = css`
@@ -33,13 +33,12 @@ export default function App() {
   `;
 
   useEffect(() => {
-    async function exchangeAuthCodeForRefreshToken(uid) {
+    async function exchangeAuthCodeForRefreshToken(user) {
       setLoading(true);
       const authCode = searchURL.split("&")[1].split("=")[1];
       const exchangeCodeForToken = await axios.all([axios.post(`https://www.strava.com/oauth/token?client_id=${process.env.REACT_APP_CLIENTID}&client_secret=${process.env.REACT_APP_CLIENTSECRET}&code=${authCode}&grant_type=authorization_code`)]);
       const refreshToken = exchangeCodeForToken[0].data.refresh_token;
-      // await addDoc(usersCollectionRef, { refreshToken: refreshToken, uid: user.uid });
-      // console.log("refreshToken", refreshToken, "uid", user);
+      // await addDoc(usersColRef, { refreshToken: refreshToken, uid: user.uid });
       // window.location.search = "";
       setLoading(false);
     }
@@ -67,9 +66,8 @@ export default function App() {
     }
 
     if (searchURL) {
-      exchangeAuthCodeForRefreshToken(user.id);
+      exchangeAuthCodeForRefreshToken(user);
     }
-    console.log("uid", user.uid);
 
     fetchActivityData();
   }, []);
