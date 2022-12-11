@@ -37,7 +37,6 @@ export default function App() {
       const exchangeCodeForToken = await axios.all([axios.post(`https://www.strava.com/oauth/token?client_id=${process.env.REACT_APP_CLIENTID}&client_secret=${process.env.REACT_APP_CLIENTSECRET}&code=${authCode}&grant_type=authorization_code`)]);
       const refreshToken = exchangeCodeForToken[0].data.refresh_token;
       const uid = searchURL.split("&")[0].split("=")[1];
-      console.log("uid", uid, "token", refreshToken);
       await setDoc(doc(usersColRef, uid), { refreshToken: refreshToken });
       window.location.search = "uid=" + uid;
     }
