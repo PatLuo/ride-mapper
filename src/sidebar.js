@@ -24,6 +24,7 @@ export default function Sidebar(props) {
     } catch (error) {
       console.log(error);
     }
+    window.location.search = "";
   };
 
   useEffect(() => {
@@ -70,10 +71,11 @@ export default function Sidebar(props) {
       <hr className="headerDivider"></hr>
       {user ? (
         <div>
-          <div>{user.displayName}</div>
+          <div>Signed in as </div>
+          <h1>{user.displayName}</h1>
           <h4>Load in your own Strava data</h4>
           <div className="stravaButton">
-            <a href={`https://www.strava.com/oauth/authorize?client_id=${process.env.REACT_APP_CLIENTID}&redirect_uri=http://localhost:3000&response_type=code&scope=activity:read_all`}>
+            <a href={`https://www.strava.com/oauth/authorize?client_id=${process.env.REACT_APP_CLIENTID}&redirect_uri=http://localhost:3000/?uid=${user.uid}&response_type=code&scope=activity:read_all`}>
               <svg width="193px" height="48px" viewBox="0 0 193 48" version="1.1">
                 <g id="Strava-Button_outlined" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                   <g id="btn_strava_connectwith_orange">

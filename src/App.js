@@ -6,10 +6,10 @@ import { UserAuth } from "./context/AuthContext";
 
 // Firebase
 import { db } from "./firebase-config";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { collection, getDoc, setDoc, doc } from "firebase/firestore";
 // leaflet map
 import polyline from "@mapbox/polyline";
-import { MapContainer, TileLayer, LayersControl, Popup, Polyline, ZoomControl } from "react-leaflet";
+import { MapContainer, TileLayer, LayersControl, Popup, Polyline } from "react-leaflet";
 // loading spinner
 import SyncLoader from "react-spinners/SyncLoader";
 import { css } from "@emotion/react";
@@ -20,11 +20,10 @@ export default function App() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  let { user } = UserAuth();
-
   const usersColRef = collection(db, "users");
 
   const searchURL = window.location.search;
+
   const override = css`
     margin: 0;
     position: absolute;
@@ -33,16 +32,22 @@ export default function App() {
   `;
 
   useEffect(() => {
-    async function exchangeAuthCodeForRefreshToken(user) {
+    async function exchangeAuthCodeForRefreshToken(authCode) {
       setLoading(true);
-      const authCode = searchURL.split("&")[1].split("=")[1];
       const exchangeCodeForToken = await axios.all([axios.post(`https://www.strava.com/oauth/token?client_id=${process.env.REACT_APP_CLIENTID}&client_secret=${process.env.REACT_APP_CLIENTSECRET}&code=${authCode}&grant_type=authorization_code`)]);
       const refreshToken = exchangeCodeForToken[0].data.refresh_token;
-      // await addDoc(usersColRef, { refreshToken: refreshToken, uid: user.uid });
-      // window.location.search = "";
-      setLoading(false);
+      const uid = searchURL.split("&")[0].split("=")[1];
+      console.log("uid", uid, "token", refreshToken);
+      await setDoc(doc(usersColRef, uid), { refreshToken: refreshToken });
+      window.location.search = "uid=" + uid;
     }
-
+    async function getRefreshToken() {
+      setLoading(true);
+      const uid = searchURL.split("&")[0].split("=")[1];
+      const userDoc = await getDoc(doc(usersColRef, uid));
+      const userDocData = userDoc.data();
+      return userDocData.refreshToken;
+    }
     async function fetchActivityData(refreshToken = process.env.REACT_APP_REFRESHTOKEN) {
       setLoading(true);
       const activityData = [];
@@ -65,10 +70,12 @@ export default function App() {
       setLoading(false);
     }
 
-    if (searchURL) {
-      exchangeAuthCodeForRefreshToken(user);
+    if (searchURL.includes("code")) {
+      const authCode = searchURL.split("&")[2].split("=")[1];
+      exchangeAuthCodeForRefreshToken(authCode);
+    } else if (searchURL.includes("uid")) {
+      getRefreshToken().then((token) => fetchActivityData(token));
     }
-
     fetchActivityData();
   }, []);
 
